@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { authEnabled, enabledProviders, getViewer, signIn } from "@/auth";
+import { authEnabled, enabledProviders, getLastAuthError, getViewer, signIn } from "@/auth";
 
 export const metadata: Metadata = { title: "Sign in | GBR Careers (Roblox Community)" };
+export const dynamic = "force-dynamic";
 
 type Props = { searchParams: Promise<{ callbackUrl?: string; error?: string }> };
 
@@ -22,6 +23,7 @@ export default async function SignInPage({ searchParams }: Props) {
 
   const viewer = await getViewer();
   if (viewer) redirect(redirectTo);
+  const lastError = error ? getLastAuthError() : null;
 
   return (
     <>
@@ -36,6 +38,21 @@ export default async function SignInPage({ searchParams }: Props) {
           {error && (
             <p role="alert" className="mt-6 rounded-sm bg-red-50 p-3 text-center text-sm text-red-700">
               Sign-in didn&apos;t complete. Please try again.
+              <span className="mt-2 block break-words text-left font-mono text-[11px] leading-4 text-red-800">
+                Code: {error}
+                {lastError && (
+                  <>
+                    <br />
+                    {lastError.type}: {lastError.message}
+                    {lastError.cause && (
+                      <>
+                        <br />
+                        Cause: {lastError.cause}
+                      </>
+                    )}
+                  </>
+                )}
+              </span>
             </p>
           )}
 
