@@ -11,6 +11,9 @@ import Footer from "@/components/Footer";
 import ScrollToTop from "@/components/ScrollToTop";
 import { getPublishedJobs } from "@/lib/jobs";
 
+// Always render fresh so jobs edited in /admin show up straight away
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const jobs = await getPublishedJobs(6);
 

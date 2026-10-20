@@ -1,41 +1,42 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import Image from "next/image";
+import { subscribeToAlerts, type AlertFormState } from "@/app/alerts/actions";
+import { CATEGORY_OPTIONS, DIVISION_OPTIONS, EMPLOYMENT_OPTIONS, REGION_OPTIONS } from "@/lib/options";
 
 const SELECTS: { name: string; label: string; options: string[] }[] = [
-  {
-    name: "division",
-    label: "Division",
-    options: ["Train Crew", "Stations", "Control & Operations", "Engineering", "Head Office"],
-  },
-  {
-    name: "category",
-    label: "Job category",
-    options: ["Driving", "Customer Service", "Signalling", "Development & Building", "HR & Recruitment", "Events"],
-  },
-  {
-    name: "region",
-    label: "Region",
-    options: ["London & Thames Valley", "Western", "Wales", "Midlands", "North", "Scotland"],
-  },
-  {
-    name: "employmentType",
-    label: "Employment type",
-    options: ["Full Time", "Part Time", "Trainee"],
-  },
+  { name: "division", label: "Division", options: DIVISION_OPTIONS },
+  { name: "category", label: "Job category", options: CATEGORY_OPTIONS },
+  { name: "region", label: "Region", options: REGION_OPTIONS },
+  { name: "employmentType", label: "Employment type", options: EMPLOYMENT_OPTIONS },
 ];
 
-export default function JobAlertsForm() {
-  const [submitted, setSubmitted] = useState(false);
+const DONE_COPY = {
+  confirm_sent: {
+    title: "Check your inbox",
+    body: "We've sent you an email. Click the link inside to confirm your job alerts.",
+  },
+  updated: { title: "Preferences updated", body: "Your job alert preferences have been saved." },
+  saved_no_email: {
+    title: "Thanks, you're signed up!",
+    body: "We'll let you know as soon as a role matching your preferences opens up.",
+  },
+} as const;
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // TODO: send to Supabase (e.g. a `job_alerts` table) once the backend is ready.
-    const data = Object.fromEntries(new FormData(e.currentTarget));
-    console.log("Job alert registration", data);
-    setSubmitted(true);
-  };
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className="btn-pill px-12 py-3 disabled:opacity-60">
+      {pending ? "Submitting…" : "Submit"}
+    </button>
+  );
+}
+
+export default function JobAlertsForm() {
+  const [state, action] = useActionState<AlertFormState, FormData>(subscribeToAlerts, { status: "idle" });
+  const done = state.status !== "idle" && state.status !== "error" ? DONE_COPY[state.status] : null;
 
   return (
     <section id="job-alerts" className="mx-auto max-w-6xl scroll-mt-16 px-6 py-20" aria-labelledby="alerts-heading">
@@ -44,15 +45,21 @@ export default function JobAlertsForm() {
       </h2>
 
       <div className="mt-12 grid items-start gap-12 lg:grid-cols-2">
-        {submitted ? (
+        {done ? (
           <div className="rounded-sm border border-brand-green/40 bg-brand-green/10 p-8" role="status">
-            <p className="font-heading text-lg font-bold text-brand-heading">Thanks, you&apos;re signed up!</p>
-            <p className="mt-2 text-sm leading-7">
-              We&apos;ll let you know as soon as a role matching your preferences opens up.
-            </p>
+            <p className="font-heading text-lg font-bold text-brand-heading">{done.title}</p>
+            <p className="mt-2 text-sm leading-7">{done.body}</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form action={action} className="space-y-5">
+            <div className="hidden" aria-hidden="true">
+              <input name="website" tabIndex={-1} autoComplete="off" />
+            </div>
+            {state.status === "error" && (
+              <p role="alert" className="rounded-sm bg-red-50 p-3 text-sm text-red-700">
+                {state.message}
+              </p>
+            )}
             <div>
               <p className="font-bold text-brand-heading">
                 Be the first to hear about new roles in the GBR community.
@@ -102,9 +109,7 @@ export default function JobAlertsForm() {
             ))}
 
             <div className="pt-2 text-center">
-              <button type="submit" className="btn-pill px-12 py-3">
-                Submit
-              </button>
+              <SubmitButton />
             </div>
           </form>
         )}

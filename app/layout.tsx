@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins, Open_Sans } from "next/font/google";
 import "./globals.css";
+import AuthProvider from "@/components/AuthProvider";
+import { authEnabled } from "@/auth";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,7 +29,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-GB" className={`${poppins.variable} ${openSans.variable}`}>
-      <body>{children}</body>
+      <body>
+        <AuthProvider enabled={authEnabled}>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

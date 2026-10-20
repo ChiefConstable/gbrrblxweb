@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
+import AccountMenu from "@/components/AccountMenu";
 
 type NavItem = {
   label: string;
@@ -158,6 +159,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <AccountMenu solid={solid} />
           <button
             type="button"
             className="hidden rounded-full bg-brand-pink px-5 py-2 text-xs font-bold uppercase tracking-wide text-white transition hover:brightness-110 sm:inline-flex"

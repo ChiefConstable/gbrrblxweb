@@ -6,6 +6,11 @@ Built with Next.js (App Router), TypeScript, Tailwind CSS, lucide-react and Supa
 
 ## Pages
 
+- `/signin`: sign in with Roblox or Discord
+- `/jobs/[slug]/apply`: application form (sign-in required)
+- `/applications`: an applicant's applications, with status, interview details and the offer accept page
+- `/admin`: add, edit, publish, close and delete jobs (admins only)
+- `/admin/applications`: review applications and move them through the stages
 - `/`: homepage with video hero, intro, "Our Functions" carousel, benefits, latest vacancies, job alerts form and community badges
 - `/jobs`: job search with keyword search, filters (Division, Grade, Region, Job Category, Employment Type) and sorting
 - `/jobs?division=train-crew`: job search pre-filtered to one division

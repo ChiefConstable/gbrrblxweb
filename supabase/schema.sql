@@ -35,3 +35,57 @@ alter table public.jobs alter column employment_type set default 'Full Time';
 alter table public.jobs alter column department drop not null;
 alter table public.jobs alter column description drop not null;
 create index if not exists jobs_division_idx on public.jobs(division);
+
+-- v4: job alert subscribers and applications.
+-- Only the server (using the secret / service role key) reads and writes these.
+-- RLS is on with no policies, so the public publishable key can't touch them.
+
+create table if not exists public.job_alerts (
+  id uuid primary key default gen_random_uuid(),
+  email text not null unique,
+  first_name text not null,
+  last_name text not null default '',
+  division text,          -- null = any
+  category text,
+  region text,
+  employment_type text,
+  token uuid not null default gen_random_uuid(),  -- used in confirm / unsubscribe links
+  confirmed_at timestamptz,
+  unsubscribed_at timestamptz,
+  created_at timestamptz not null default now()
+);
+create unique index if not exists job_alerts_token_idx on public.job_alerts(token);
+alter table public.job_alerts enable row level security;
+revoke all on public.job_alerts from anon, authenticated;
+
+create sequence if not exists public.application_reference_seq start with 100001;
+
+create table if not exists public.applications (
+  id uuid primary key default gen_random_uuid(),
+  reference bigint not null unique default nextval('public.application_reference_seq'),
+  job_slug text not null,
+  job_title text not null,
+  job_location text not null default '',
+  provider text not null,                -- 'roblox' or 'discord'
+  provider_account_id text not null,
+  username text not null,
+  first_name text not null,
+  last_name text not null,
+  email text not null,
+  discord_username text,
+  age_confirmed boolean not null default false,
+  experience text not null default '',
+  motivation text not null default '',
+  availability text not null default '',
+  status text not null default 'submitted' check (status in
+    ('submitted','assessment','group_interview','interview','offered','accepted','declined','unsuccessful','withdrawn')),
+  admin_note text,
+  interview_at timestamptz,
+  interview_location text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index if not exists applications_applicant_idx on public.applications(provider, provider_account_id);
+create index if not exists applications_status_idx on public.applications(status, created_at desc);
+alter table public.applications enable row level security;
+revoke all on public.applications from anon, authenticated;

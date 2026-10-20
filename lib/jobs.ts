@@ -49,9 +49,9 @@ const DEPARTMENT_TO_DIVISION: Record<string, string> = {
   Engineering: "Engineering",
 };
 
-type JobRow = Partial<Job> & { id: string; slug: string; title: string; location: string; department?: string | null; posted_at: string };
+export type JobRow = Partial<Job> & { id: string; slug: string; title: string; location: string; department?: string | null; posted_at: string };
 
-function normalise(row: JobRow): Job {
+export function normalise(row: JobRow): Job {
   const department = row.department ?? undefined;
   return {
     id: row.id,

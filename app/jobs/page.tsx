@@ -6,6 +6,9 @@ import Badges from "@/components/Badges";
 import ScrollToTop from "@/components/ScrollToTop";
 import { getPublishedJobs } from "@/lib/jobs";
 
+// Always render fresh so jobs edited in /admin show up straight away
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = { title: "Job Search | GBR Careers (Roblox Community)" };
 
 type Props = { searchParams: Promise<{ division?: string | string[]; favourites?: string }> };

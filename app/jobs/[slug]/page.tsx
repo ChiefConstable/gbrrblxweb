@@ -21,7 +21,11 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FavouriteButtons from "@/components/FavouriteButtons";
 import ScrollToTop from "@/components/ScrollToTop";
-import { getJobBySlug, getPublishedJobs } from "@/lib/jobs";
+import { getJobBySlug } from "@/lib/jobs";
+import { authEnabled, getViewer } from "@/auth";
+
+// Always render fresh so jobs edited in /admin show up straight away
+export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -45,11 +49,6 @@ const JOB_BENEFITS: { label: string; icon: LucideIcon }[] = [
 const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
-export async function generateStaticParams() {
-  const jobs = await getPublishedJobs(500);
-  return jobs.map((job) => ({ slug: job.slug }));
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const job = await getJobBySlug(slug);
@@ -62,6 +61,7 @@ export default async function JobPage({ params }: Props) {
   const { slug } = await params;
   const job = await getJobBySlug(slug);
   if (!job) notFound();
+  const viewer = await getViewer();
 
   const meta: { icon: LucideIcon; label: string; value: string }[] = [
     { icon: Hash, label: "Reference", value: job.reference },
@@ -72,7 +72,8 @@ export default async function JobPage({ params }: Props) {
     { icon: Clock, label: "Contract", value: `${job.contract_type} - ${job.employment_type}` },
   ];
 
-  const applyHref = `#apply`;
+  // The apply page asks people to sign in first when needed
+  const applyHref = `/jobs/${job.slug}/apply`;
 
   return (
     <>
@@ -187,14 +188,23 @@ export default async function JobPage({ params }: Props) {
               <section id="apply" className="scroll-mt-24 rounded-sm bg-gray-100 p-6">
                 <h2 className="text-base">Ready to apply?</h2>
                 <p className="mt-2">
-                  Applications for this role close on <strong>{formatDate(job.closing_date)}</strong>. Join the GBR
-                  community server and submit your application there, quoting reference{" "}
-                  <strong>{job.reference}</strong>.
+                  Applications for this role close on <strong>{formatDate(job.closing_date)}</strong>. Sign in with
+                  Roblox or Discord and it takes about 5 minutes.
                 </p>
-                {/* TODO: replace href with your Discord invite or application form link */}
-                <Link href="#" className="btn-pill-sm mt-5">
-                  Apply Now
+                {viewer && (
+                  <p className="mt-3 text-xs text-gray-600">
+                    Signed in as <strong>{viewer.name}</strong>
+                  </p>
+                )}
+                <Link href={applyHref} className="btn-pill-sm mt-4">
+                  {authEnabled && !viewer ? "Sign in to apply" : "Apply Now"}
                 </Link>
+                    {/* TODO: replace href with your Discord invite or application form link */}
+                    <Link href="#" className="btn-pill-sm mt-4">
+                      Apply Now
+                    </Link>
+                  </>
+                )}
               </section>
             </div>
           </article>
