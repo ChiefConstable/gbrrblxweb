@@ -1,0 +1,10 @@
+-- Fictional roles for an unofficial Roblox railway.
+insert into public.jobs (slug,title,location,department,employment_type,description,responsibilities,requirements,featured,status)
+values
+('trainee-train-driver','Trainee Train Driver','Plymouth','Train Operations','Roleplay • Training provided','Learn how to operate passenger services across our Roblox railway network.',array['Complete driver training','Follow operational procedures','Run roleplay services'],array['Active Roblox account','Good communication','Willingness to learn'],true,'published'),
+('customer-service-assistant','Customer Service Assistant','Exeter St Davids','Customer Experience','Roleplay • Flexible','Help passengers and assist the station team.',array['Answer passenger queries','Give service information','Support your colleagues'],array['Friendly approach','Communication skills'],true,'published'),
+('train-manager','Train Manager','Bristol Temple Meads','Onboard Services','Roleplay • Experienced','Coordinate onboard operations and deliver excellent customer service.',array['Coordinate departures','Make announcements','Lead onboard colleagues'],array['Railway roleplay experience preferred','Professional communication'],true,'published'),
+('signaller','Signaller','Reading','Network Control','Roleplay • Training provided','Control train movements across the network.',array['Monitor signals','Route trains','Coordinate incidents'],array['Concentration','Communication'],false,'published'),
+('station-supervisor','Station Supervisor','London Paddington','Station Operations','Roleplay • Leadership','Coordinate the station team during busy operations.',array['Allocate duties','Oversee station services'],array['Organisation','Leadership'],false,'published'),
+('recruitment-officer','Recruitment Officer','Remote','People & Recruitment','Roleplay • Flexible','Help candidates join our railway group.',array['Review applications','Arrange interviews'],array['Professionalism','Fair decisions'],false,'published')
+on conflict (slug) do nothing;
