@@ -7,7 +7,7 @@ import { authEnabled, enabledProviders, getLastAuthError, getViewer, signIn } fr
 export const metadata: Metadata = { title: "Sign in | GBR Careers (Roblox Community)" };
 export const dynamic = "force-dynamic";
 
-type Props = { searchParams: Promise<{ callbackUrl?: string; error?: string }> };
+type Props = { searchParams: Promise<{ callbackUrl?: string; error?: string; detail?: string }> };
 
 // Only allow redirects back to pages on this site
 const safePath = (url?: string) => (url && url.startsWith("/") && !url.startsWith("//") ? url : "/");
@@ -18,7 +18,7 @@ const PROVIDERS = {
 } as const;
 
 export default async function SignInPage({ searchParams }: Props) {
-  const { callbackUrl, error } = await searchParams;
+  const { callbackUrl, error, detail } = await searchParams;
   const redirectTo = safePath(callbackUrl);
 
   const viewer = await getViewer();
@@ -40,7 +40,13 @@ export default async function SignInPage({ searchParams }: Props) {
               Sign-in didn&apos;t complete. Please try again.
               <span className="mt-2 block break-words text-left font-mono text-[11px] leading-4 text-red-800">
                 Code: {error}
-                {lastError && (
+                {detail && (
+                  <>
+                    <br />
+                    {detail.slice(0, 400)}
+                  </>
+                )}
+                {!detail && lastError && (
                   <>
                     <br />
                     {lastError.type}: {lastError.message}
