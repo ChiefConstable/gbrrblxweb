@@ -199,12 +199,6 @@ export default async function JobPage({ params }: Props) {
                 <Link href={applyHref} className="btn-pill-sm mt-4">
                   {authEnabled && !viewer ? "Sign in to apply" : "Apply Now"}
                 </Link>
-                    {/* TODO: replace href with your Discord invite or application form link */}
-                    <Link href="#" className="btn-pill-sm mt-4">
-                      Apply Now
-                    </Link>
-                  </>
-                )}
               </section>
             </div>
           </article>
