@@ -21,3 +21,17 @@ grant select on public.jobs to anon, authenticated;
 drop policy if exists "Anyone can read published vacancies" on public.jobs;
 create policy "Anyone can read published vacancies" on public.jobs for select to anon, authenticated using (status = 'published');
 -- Manage job postings through Supabase dashboard; no anonymous write policies.
+
+-- v3: extra fields used by the job search filters and job detail pages.
+-- Safe to re-run; existing rows keep working (the site fills in defaults).
+alter table public.jobs add column if not exists division text;        -- Train Crew, Stations, Control & Operations, Engineering, Head Office
+alter table public.jobs add column if not exists region text;          -- e.g. Western, Wales, South West, Remote
+alter table public.jobs add column if not exists category text;        -- e.g. Driving, Customer Service, Signalling
+alter table public.jobs add column if not exists grade text;           -- e.g. Grade 1 to Grade 4
+alter table public.jobs add column if not exists contract_type text not null default 'Permanent';
+alter table public.jobs add column if not exists closing_date date;
+alter table public.jobs add column if not exists pay text;             -- in-game pay, e.g. '120 credits per shift'
+alter table public.jobs alter column employment_type set default 'Full Time';
+alter table public.jobs alter column department drop not null;
+alter table public.jobs alter column description drop not null;
+create index if not exists jobs_division_idx on public.jobs(division);

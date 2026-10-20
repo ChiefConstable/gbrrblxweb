@@ -2,85 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-white font-body text-gray-700 antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-heading font-bold text-brand-heading;
+  }
 }
 
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  background: #f3f6fd;
-  color: #0f1733;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-a {
-  text-decoration: none;
-}
-
-.field {
-  width: 100%;
-  min-height: 50px;
-  border: 1px solid #cdd8f7;
-  border-radius: 14px;
-  background: #ffffff;
-  padding: 13px 15px;
-  color: #0f1733;
-  outline: none;
-}
-
-.field:focus {
-  border-color: #1d56f0;
-  box-shadow: 0 0 0 3px rgba(29, 86, 240, 0.14);
-}
-
-.eyebrow {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #d90a2e;
-}
-
-.brand-hero {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #062b7a 0%, #08205c 52%, #041433 100%);
-}
-
-.brand-hero::before {
-  content: '';
-  position: absolute;
-  top: -140px;
-  right: -160px;
-  width: 760px;
-  height: 300px;
-  background: linear-gradient(145deg, transparent 0 14%, #1d56f0 14% 35%, #062b7a 35% 56%, #ffffff 56% 62%, #d90a2e 62% 82%, #ff1746 82% 93%, #ffffff 93% 100%);
-  transform: rotate(19deg);
-  opacity: 1;
-}
-
-.brand-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 85% 25%, rgba(255,255,255,0.1), transparent 28%);
-  pointer-events: none;
-}
-
-.brand-panel {
-  background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.06));
-  border: 1px solid rgba(255,255,255,0.18);
-  backdrop-filter: blur(10px);
-}
-
-.brand-grid-card {
-  background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+@layer components {
+  /* Primary green pill button / link */
+  .btn-pill {
+    @apply inline-flex items-center justify-center rounded-full bg-brand-green font-body font-bold text-white transition-colors duration-200 hover:bg-brand-greenDark focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/40;
+  }
+  /* Small uppercase CTA variant */
+  .btn-pill-sm {
+    @apply btn-pill px-8 py-3 text-sm uppercase tracking-wide;
+  }
+  /* Circular dark-green icon button */
+  .btn-circle {
+    @apply inline-flex h-12 w-12 items-center justify-center rounded-full bg-brand-dark text-white shadow-md transition hover:bg-brand-heading focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/50;
+  }
+  /* Form fields */
+  .field {
+    @apply w-full rounded-sm border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green;
+  }
 }

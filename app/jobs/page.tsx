@@ -1,21 +1,43 @@
-import JobExplorer from '@/components/JobExplorer';
-import { getJobs } from '@/lib/jobs';
+import type { Metadata } from "next";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import JobSearch from "@/components/JobSearch";
+import Badges from "@/components/Badges";
+import ScrollToTop from "@/components/ScrollToTop";
+import { getPublishedJobs } from "@/lib/jobs";
 
-export const metadata = { title: 'Current vacancies | GBR Roblox Careers' };
+export const metadata: Metadata = { title: "Job Search | GBR Careers (Roblox Community)" };
 
-export default async function JobsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { q } = await searchParams;
+type Props = { searchParams: Promise<{ division?: string | string[]; favourites?: string }> };
+
+export default async function JobsPage({ searchParams }: Props) {
+  const { division, favourites } = await searchParams;
+  const favouritesOnly = favourites === "1";
+  const jobs = await getPublishedJobs(500);
+  const initialDivision = Array.isArray(division) ? division[0] : division;
 
   return (
-    <main>
-      <div className="brand-hero px-5 py-16 text-white">
-        <div className="relative mx-auto max-w-7xl">
-          <span className="text-sm font-bold uppercase tracking-[.2em] text-white/75">Find your next stop</span>
-          <h1 className="mt-4 text-4xl font-black md:text-6xl">Explore careers.</h1>
-          <p className="mt-4 max-w-2xl text-white/75">Search fictional railway opportunities on the Great British Railways Roblox network.</p>
-        </div>
-      </div>
-      <JobExplorer jobs={await getJobs()} initialQuery={q || ''} />
-    </main>
+    <>
+      <Header />
+      <main>
+        <section className="bg-brand-dark pb-12 pt-28">
+          <div className="mx-auto max-w-7xl px-6">
+            <h1 className="text-3xl text-white sm:text-4xl">{favouritesOnly ? "Your Favourite Vacancies" : "Search GBR Vacancies"}</h1>
+            <p className="mt-3 max-w-2xl leading-7 text-white/80">
+              Find your next role in the GBR Roblox railway community. Filter by division, grade, region and more.
+            </p>
+          </div>
+        </section>
+        <JobSearch
+          key={`${initialDivision ?? "all"}-${favouritesOnly}`}
+          jobs={jobs}
+          initialDivision={initialDivision}
+          favouritesOnly={favouritesOnly}
+        />
+        <Badges />
+      </main>
+      <Footer />
+      <ScrollToTop />
+    </>
   );
 }
