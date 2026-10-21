@@ -29,6 +29,7 @@ export default function CookiesPage() {
 
         <h2>Strictly necessary</h2>
         <p>The site needs these to work, so they&apos;re always on. Some cookie names start with __Secure- or __Host-.</p>
+        <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
         <table>
           <thead>
             <tr>
@@ -41,7 +42,7 @@ export default function CookiesPage() {
           <tbody>
             {ROWS.map(([name, type, purpose, lasts]) => (
               <tr key={name}>
-                <td className="font-mono text-xs">{name}</td>
+                <td className="break-all font-mono text-xs">{name}</td>
                 <td>{type}</td>
                 <td>{purpose}</td>
                 <td>{lasts}</td>
@@ -49,6 +50,7 @@ export default function CookiesPage() {
             ))}
           </tbody>
         </table>
+        </div>
 
         <h2>Performance</h2>
         <p>

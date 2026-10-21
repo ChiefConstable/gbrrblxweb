@@ -88,7 +88,7 @@ export default function Header() {
           className={`flex flex-col leading-none ${solid ? "text-brand-heading" : "text-white"}`}
           aria-label="GBR Careers, Roblox railway community, home"
         >
-          <span className="font-heading text-2xl">
+          <span className="whitespace-nowrap font-heading text-xl sm:text-2xl">
             <span className="font-bold">GBR</span>{" "}
             <span className="font-light">Careers</span>
           </span>
@@ -102,8 +102,8 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav ref={navRef} aria-label="Main" className="hidden xl:block">
-          <ul className="flex items-center gap-6">
+        <nav ref={navRef} aria-label="Main" className="hidden min-[1440px]:block">
+          <ul className="flex items-center gap-5 2xl:gap-6">
             {NAV.map((item) => (
               <li key={item.label} className="relative">
                 {item.children ? (
@@ -116,7 +116,7 @@ export default function Header() {
                         e.stopPropagation();
                         setOpenDropdown((cur) => (cur === item.label ? null : item.label));
                       }}
-                      className={`flex items-center gap-1 text-[13px] font-semibold uppercase tracking-wide transition-colors ${
+                      className={`flex items-center gap-1 whitespace-nowrap text-[13px] font-semibold uppercase tracking-wide transition-colors ${
                         solid ? "text-brand-heading hover:text-brand-green" : "text-white hover:text-white/80"
                       }`}
                     >
@@ -146,7 +146,7 @@ export default function Header() {
                 ) : (
                   <Link
                     href={item.href}
-                    className={`text-[13px] font-semibold uppercase tracking-wide transition-colors ${
+                    className={`whitespace-nowrap text-[13px] font-semibold uppercase tracking-wide transition-colors ${
                       solid ? "text-brand-heading hover:text-brand-green" : "text-white hover:text-white/80"
                     }`}
                   >
@@ -162,7 +162,7 @@ export default function Header() {
           <AccountMenu solid={solid} />
           <button
             type="button"
-            className="hidden rounded-full bg-brand-pink px-5 py-2 text-xs font-bold uppercase tracking-wide text-white transition hover:brightness-110 sm:inline-flex"
+            className="hidden whitespace-nowrap rounded-full bg-brand-pink px-5 py-2 text-xs font-bold uppercase tracking-wide text-white transition hover:brightness-110 sm:inline-flex"
           >
             Accessibility Tool
           </button>
@@ -170,7 +170,7 @@ export default function Header() {
           {/* Mobile toggle */}
           <button
             type="button"
-            className={`inline-flex h-10 w-10 items-center justify-center rounded-full xl:hidden ${
+            className={`inline-flex h-10 w-10 items-center justify-center rounded-full min-[1440px]:hidden ${
               solid ? "text-brand-heading hover:bg-gray-100" : "text-white hover:bg-white/15"
             }`}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
@@ -188,7 +188,7 @@ export default function Header() {
         <nav
           id="mobile-menu"
           aria-label="Mobile"
-          className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-gray-100 bg-white shadow-lg xl:hidden"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-gray-100 bg-white shadow-lg min-[1440px]:hidden"
         >
           <ul className="divide-y divide-gray-100">
             {NAV.map((item) => (

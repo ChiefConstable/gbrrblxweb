@@ -33,7 +33,7 @@ function AccountMenuInner({ solid }: { solid: boolean }) {
     return (
       <Link
         href="/signin"
-        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-bold uppercase tracking-wide ${tone}`}
+        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-xs font-bold uppercase tracking-wide ${tone}`}
       >
         <LogIn size={16} aria-hidden="true" />
         <span className="hidden sm:inline">Sign in</span>

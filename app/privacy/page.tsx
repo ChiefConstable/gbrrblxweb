@@ -51,6 +51,7 @@ export default function PrivacyPage() {
         </p>
 
         <h2>How we use your information</h2>
+        <div className="-mx-6 overflow-x-auto px-6 sm:mx-0 sm:px-0">
         <table>
           <thead>
             <tr>
@@ -77,6 +78,7 @@ export default function PrivacyPage() {
             </tr>
           </tbody>
         </table>
+        </div>
         <p>We don&apos;t sell your information, show adverts, or use your information for marketing.</p>
 
         <h2>Who we share it with</h2>

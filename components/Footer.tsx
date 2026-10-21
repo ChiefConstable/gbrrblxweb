@@ -18,7 +18,7 @@ export default function Footer() {
           &copy;2026 GBR Roblox. All Rights Reserved. Not affiliated with Great British Railways or FirstGroup plc.
         </p>
         <nav aria-label="Footer">
-          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+          <ul className="flex flex-wrap gap-x-5 gap-y-1 [&_a]:inline-block [&_a]:py-1 [&_button]:py-1">
             {LINKS.slice(0, 3).map(({ label, href }) => (
               <li key={label}>
                 <Link href={href} className="hover:underline">

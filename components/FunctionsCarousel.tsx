@@ -120,7 +120,7 @@ export default function FunctionsCarousel() {
         </button>
       </div>
 
-      <div className="mt-8 flex justify-center gap-3">
+      <div className="mt-6 flex justify-center gap-1">
         {SLIDES.map((slide, i) => (
           <button
             key={slide.title}
@@ -128,10 +128,14 @@ export default function FunctionsCarousel() {
             onClick={() => go(i)}
             aria-label={`Show ${slide.title}`}
             aria-current={i === index}
-            className={`h-3 w-3 rounded-full transition-colors ${
-              i === index ? "bg-brand-green" : "bg-gray-300 hover:bg-gray-400"
-            }`}
-          />
+            className="group flex h-8 w-8 items-center justify-center"
+          >
+            <span
+              className={`h-3 w-3 rounded-full transition-colors ${
+                i === index ? "bg-brand-green" : "bg-gray-300 group-hover:bg-gray-400"
+              }`}
+            />
+          </button>
         ))}
       </div>
     </section>

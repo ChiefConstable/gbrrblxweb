@@ -17,7 +17,7 @@ export default function HeroVideo() {
   };
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-brand-dark" aria-label="Welcome video">
+    <section className="relative h-[100svh] min-h-[480px] w-full overflow-hidden bg-brand-dark" aria-label="Welcome video">
       <video
         ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
