@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, Open_Sans } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "@/components/AuthProvider";
+import CookieConsent from "@/components/CookieConsent";
 import { authEnabled } from "@/auth";
 
 const poppins = Poppins({
@@ -31,6 +32,7 @@ export default function RootLayout({
     <html lang="en-GB" className={`${poppins.variable} ${openSans.variable}`}>
       <body>
         <AuthProvider enabled={authEnabled}>{children}</AuthProvider>
+        <CookieConsent />
       </body>
     </html>
   );

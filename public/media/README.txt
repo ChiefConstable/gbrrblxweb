@@ -11,3 +11,9 @@ strip-1.jpg ... strip-4.jpg   photo strip (wide, shown 160px tall)
 job-alerts.jpg            image beside the job alerts form (portrait)
 
 Roblox screenshots from your own game work well for all of these.
+
+Info pages (wide landscape photos, shown beside the page title and in sections):
+page-diversity.jpg, page-diversity-2.jpg
+page-development.jpg, page-development-2.jpg
+page-sustainability.jpg, page-sustainability-2.jpg
+page-insiders.jpg

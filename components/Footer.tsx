@@ -1,6 +1,14 @@
-import Link from "next/link";
+"use client";
 
-const LINKS = ["Sitemap", "Privacy Policy", "Cookies Policy", "Cookie Preferences", "Terms of Use"];
+import Link from "next/link";
+import { openCookiePreferences } from "@/components/CookieConsent";
+
+const LINKS = [
+  { label: "Sitemap", href: "/sitemap" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Cookies Policy", href: "/cookies" },
+  { label: "Terms of Use", href: "/terms" },
+];
 
 export default function Footer() {
   return (
@@ -11,13 +19,23 @@ export default function Footer() {
         </p>
         <nav aria-label="Footer">
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
-            {LINKS.map((label) => (
+            {LINKS.slice(0, 3).map(({ label, href }) => (
               <li key={label}>
-                <Link href="#" className="hover:underline">
+                <Link href={href} className="hover:underline">
                   {label}
                 </Link>
               </li>
             ))}
+            <li>
+              <button type="button" onClick={openCookiePreferences} className="hover:underline">
+                Cookie Preferences
+              </button>
+            </li>
+            <li>
+              <Link href={LINKS[3].href} className="hover:underline">
+                {LINKS[3].label}
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
