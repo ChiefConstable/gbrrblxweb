@@ -59,7 +59,7 @@ export default async function AdminApplicationPage({ params, searchParams }: Pro
       </Link>
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl">
-          {formatReference(a.reference)}: {a.first_name} {a.last_name}
+          {formatReference(a.reference)}: {[a.first_name, a.last_name].filter(Boolean).join(" ")}
         </h1>
         <span className={`rounded-full px-3 py-1 text-xs font-bold ${STATUS_STYLE[a.status]}`}>{STATUS_LABEL[a.status]}</span>
       </div>
@@ -83,7 +83,8 @@ export default async function AdminApplicationPage({ params, searchParams }: Pro
         <section className="space-y-6">
           <dl className="grid gap-4 rounded-sm border border-gray-200 p-5 text-sm sm:grid-cols-2">
             {[
-              ["Account", `${a.username} (${a.provider})`],
+              ["Roblox username", [a.first_name, a.last_name].filter(Boolean).join(" ")],
+              ["Signed in as", `${a.username} (${a.provider})`],
               ["Account ID", a.provider_account_id],
               ["Email", a.email],
               ["Discord", a.discord_username ?? "Not given"],

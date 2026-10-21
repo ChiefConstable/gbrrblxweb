@@ -53,7 +53,7 @@ export default async function ApplyPage({ params }: Props) {
           </p>
           <ApplyForm
             slug={job.slug}
-            defaultName=""
+            defaultName={viewer.provider === "roblox" ? viewer.name : ""}
             defaultEmail={viewer.email ?? ""}
             isDiscord={viewer.provider === "discord"}
           />

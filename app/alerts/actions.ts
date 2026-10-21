@@ -11,15 +11,17 @@ const str = (fd: FormData, k: string, max = 200) => String(fd.get(k) ?? "").trim
 
 export async function subscribeToAlerts(_prev: AlertFormState, fd: FormData): Promise<AlertFormState> {
   if (str(fd, "website")) return { status: "confirm_sent" }; // honeypot: pretend it worked
-  const firstName = str(fd, "firstName", 80);
-  const lastName = str(fd, "lastName", 80);
+  const username = str(fd, "username", 40);
   const email = str(fd, "email");
-  if (!firstName || !lastName) return { status: "error", message: "Please enter your first and last name." };
+  if (!/^[A-Za-z0-9_]{3,20}$/.test(username)) {
+    return { status: "error", message: "Please enter a valid Roblox username (3 to 20 letters, numbers or underscores)." };
+  }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { status: "error", message: "Please enter a valid email address." };
 
   const result = await subscribe({
-    firstName,
-    lastName,
+    // Stored in first_name so the existing table and email templates keep working
+    firstName: username,
+    lastName: "",
     email,
     division: str(fd, "division") || null,
     category: str(fd, "category") || null,

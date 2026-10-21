@@ -39,7 +39,7 @@ export default async function AdminApplicationsPage({ searchParams }: Props) {
             <thead>
               <tr className="border-b-2 border-brand-dark text-xs text-brand-heading">
                 <th className="px-3 py-2">Ref</th>
-                <th className="px-3 py-2">Applicant</th>
+                <th className="px-3 py-2">Roblox username</th>
                 <th className="px-3 py-2">Role</th>
                 <th className="px-3 py-2">Applied</th>
                 <th className="px-3 py-2">Status</th>
@@ -54,9 +54,9 @@ export default async function AdminApplicationsPage({ searchParams }: Props) {
                     </Link>
                   </td>
                   <td className="px-3 py-3">
-                    {a.first_name} {a.last_name}
+                    {[a.first_name, a.last_name].filter(Boolean).join(" ")}
                     <div className="text-xs text-gray-500">
-                      {a.username} ({a.provider})
+                      signed in as {a.username} ({a.provider})
                     </div>
                   </td>
                   <td className="px-3 py-3">

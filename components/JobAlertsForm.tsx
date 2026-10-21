@@ -70,19 +70,20 @@ export default function JobAlertsForm() {
               </p>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div>
-                <label htmlFor="firstName" className="mb-1 block text-sm font-semibold text-brand-heading">
-                  First Name *
-                </label>
-                <input id="firstName" name="firstName" type="text" autoComplete="given-name" required className="field" />
-              </div>
-              <div>
-                <label htmlFor="lastName" className="mb-1 block text-sm font-semibold text-brand-heading">
-                  Last Name *
-                </label>
-                <input id="lastName" name="lastName" type="text" autoComplete="family-name" required className="field" />
-              </div>
+            <div>
+              <label htmlFor="username" className="mb-1 block text-sm font-semibold text-brand-heading">
+                Roblox Username *
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                maxLength={40}
+                placeholder="e.g. RailFan_123"
+                className="field"
+              />
             </div>
 
             <div>

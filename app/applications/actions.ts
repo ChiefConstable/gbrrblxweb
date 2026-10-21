@@ -18,8 +18,7 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
   }
 
   const values = {
-    first_name: str(formData, "first_name", 80),
-    last_name: str(formData, "last_name", 80),
+    roblox_username: str(formData, "roblox_username", 40),
     email: str(formData, "email", 200),
     discord_username: str(formData, "discord_username", 80),
     experience: str(formData, "experience"),
@@ -30,7 +29,9 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
   // Honeypot: real people never fill this hidden field
   if (str(formData, "website")) return { error: "Something went wrong. Please try again.", values };
 
-  if (!values.first_name || !values.last_name) return { error: "Please enter your first and last name.", values };
+  if (!/^[A-Za-z0-9_]{3,20}$/.test(values.roblox_username)) {
+    return { error: "Please enter a valid Roblox username (3 to 20 letters, numbers or underscores).", values };
+  }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) return { error: "Please enter a valid email address.", values };
   if (values.motivation.length < 20) return { error: "Please tell us a bit more about why you want this role.", values };
   if (formData.get("age_confirmed") !== "on") return { error: "You need to be 13 or over to apply.", values };
@@ -41,7 +42,17 @@ export async function submitApplication(_prev: ApplyState, formData: FormData): 
   const result = await createApplication(
     { provider: viewer.provider, providerAccountId: viewer.providerAccountId, username: viewer.name },
     { slug: job.slug, title: job.title, location: job.location },
-    { ...values, discord_username: values.discord_username || null, age_confirmed: true },
+    {
+      // The Roblox username is stored in first_name so existing tables, admin pages and emails keep working
+      first_name: values.roblox_username,
+      last_name: "",
+      email: values.email,
+      discord_username: values.discord_username || null,
+      age_confirmed: true,
+      experience: values.experience,
+      motivation: values.motivation,
+      availability: values.availability,
+    },
   );
   if (!result.ok) return { error: result.error, values };
 

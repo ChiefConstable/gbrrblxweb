@@ -45,15 +45,19 @@ export default function ApplyForm({
         </p>
       )}
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <div>
-          <label htmlFor="first_name" className={label}>First name *</label>
-          <input id="first_name" name="first_name" required autoComplete="given-name" defaultValue={v.first_name ?? defaultName} className="field" />
-        </div>
-        <div>
-          <label htmlFor="last_name" className={label}>Last name or initial *</label>
-          <input id="last_name" name="last_name" required autoComplete="family-name" defaultValue={v.last_name} className="field" />
-        </div>
+      <div>
+        <label htmlFor="roblox_username" className={label}>Roblox username *</label>
+        <input
+          id="roblox_username"
+          name="roblox_username"
+          required
+          maxLength={40}
+          autoComplete="username"
+          defaultValue={v.roblox_username ?? defaultName}
+          placeholder="e.g. RailFan_123"
+          className="field"
+        />
+        <p className="mt-1 text-xs text-gray-500">The username you use in-game, so we can find you on the railway.</p>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
