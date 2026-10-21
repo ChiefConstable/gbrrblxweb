@@ -5,7 +5,14 @@ import { deleteJob, setJobStatus } from "@/app/admin/actions";
 import ConfirmSubmit from "@/components/admin/ConfirmSubmit";
 
 type Props = {
-  searchParams: Promise<{ saved?: string; updated?: string; deleted?: string; notified?: string; error?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    updated?: string;
+    deleted?: string;
+    notified?: string;
+    closedApps?: string;
+    error?: string;
+  }>;
 };
 
 const STATUS_STYLE = {
@@ -15,7 +22,8 @@ const STATUS_STYLE = {
 } as const;
 
 export default async function AdminJobsPage({ searchParams }: Props) {
-  const { saved, updated, deleted, notified, error } = await searchParams;
+  const { saved, updated, deleted, notified, closedApps, error } = await searchParams;
+  const closedCount = Number(closedApps ?? 0);
   const jobs = await listJobsForAdmin();
   const notifiedCount = Number(notified ?? 0);
 
@@ -40,6 +48,13 @@ export default async function AdminJobsPage({ searchParams }: Props) {
           {updated && <>Updated &ldquo;{updated}&rdquo;.</>}
           {deleted && <>Deleted &ldquo;{deleted}&rdquo;.</>}
           {notifiedCount > 0 && <> Job alert sent to {notifiedCount} subscriber{notifiedCount === 1 ? "" : "s"}.</>}
+          {closedCount > 0 && (
+            <>
+              {" "}
+              {closedCount} open application{closedCount === 1 ? " was" : "s were"} closed and the applicant
+              {closedCount === 1 ? " has" : "s have"} been emailed.
+            </>
+          )}
         </p>
       )}
       {error && (
@@ -106,7 +121,7 @@ export default async function AdminJobsPage({ searchParams }: Props) {
                       <form action={deleteJob}>
                         <input type="hidden" name="id" value={job.id} />
                         <ConfirmSubmit
-                          message={`Delete "${job.title}"? This can't be undone. Closing it instead keeps it in the list.`}
+                          message={`Delete "${job.title}"? This can't be undone, and anyone with an application before the offer stage will be emailed that it has closed.`}
                           className="rounded-full p-2 text-red-600 hover:bg-red-50"
                         >
                           <Trash2 size={15} aria-label={`Delete ${job.title}`} />
@@ -122,7 +137,8 @@ export default async function AdminJobsPage({ searchParams }: Props) {
       )}
 
       <p className="mt-6 text-xs text-gray-500">
-        Publishing a job emails everyone with matching job alerts. Closing hides it from the site.
+        Publishing a job emails everyone with matching job alerts. Closing, unpublishing or deleting a job hides it and
+        closes its applications that haven&apos;t reached an offer, emailing each applicant. Offers are not affected.
       </p>
     </>
   );

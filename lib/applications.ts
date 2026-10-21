@@ -17,9 +17,12 @@ export const STATUSES = [
   "declined",
   "unsuccessful",
   "withdrawn",
+  "vacancy_closed",
 ] as const;
 export const OPEN_STATUSES: ApplicationStatus[] = ["submitted", "assessment", "group_interview", "interview", "offered"];
 const WITHDRAWABLE: ApplicationStatus[] = ["submitted", "assessment", "group_interview", "interview"];
+// Closed automatically when their vacancy is closed or deleted (offers are kept)
+export const CLOSE_WITH_VACANCY: ApplicationStatus[] = ["submitted", "assessment", "group_interview", "interview"];
 export const NEEDS_SCHEDULE: ApplicationStatus[] = ["group_interview", "interview"];
 export type ApplicationStatus = (typeof STATUSES)[number];
 
@@ -33,6 +36,7 @@ export const STATUS_LABEL: Record<ApplicationStatus, string> = {
   declined: "Offer declined",
   unsuccessful: "Unsuccessful",
   withdrawn: "Withdrawn",
+  vacancy_closed: "Vacancy closed",
 };
 
 export const STATUS_STYLE: Record<ApplicationStatus, string> = {
@@ -45,6 +49,7 @@ export const STATUS_STYLE: Record<ApplicationStatus, string> = {
   declined: "bg-gray-100 text-gray-500",
   unsuccessful: "bg-red-50 text-red-700",
   withdrawn: "bg-gray-100 text-gray-500",
+  vacancy_closed: "bg-gray-100 text-gray-600",
 };
 
 export type Application = {
@@ -301,6 +306,17 @@ function buildEmail(a: Application): { subject: string; title: string; paragraph
         ],
         cta: [`${siteUrl()}/jobs`, "See other vacancies"],
       };
+    case "vacancy_closed":
+      return {
+        subject: `Applications have closed: ${a.job_title}, reference ${ref}`,
+        title: "This vacancy has now closed",
+        paragraphs: [
+          `Thank you for your interest in ${role} (${escapeHtml(a.job_location)}).`,
+          "Applications for this vacancy have now closed, so your application won't be taken any further in the recruitment process. Any assessment or interview that was booked for this role has been cancelled.",
+          "This isn't a reflection on your application. You're welcome to apply for any of our other vacancies straight away, and you can sign up for job alerts to hear when similar roles open.",
+        ],
+        cta: [`${siteUrl()}/jobs`, "See current vacancies"],
+      };
     default:
       return null; // declined and withdrawn don't send emails
   }
@@ -365,4 +381,29 @@ export async function withdrawApplication(id: string, applicant: Omit<Applicant,
     .in("status", WITHDRAWABLE)
     .select("id");
   return !error && (data?.length ?? 0) > 0;
+}
+
+/**
+ * Closes every application for a vacancy that hasn't reached an offer, and emails
+ * each applicant. Called when an admin closes, unpublishes or deletes a job.
+ * Offers and finished applications are left alone.
+ */
+export async function closeApplicationsForJob(jobSlug: string): Promise<{ closed: number; emailed: number }> {
+  const db = getSupabaseAdmin();
+  if (!db || !jobSlug) return { closed: 0, emailed: 0 };
+  const { data, error } = await db
+    .from("applications")
+    .update({ status: "vacancy_closed", admin_note: null, updated_at: new Date().toISOString() })
+    .eq("job_slug", jobSlug)
+    .in("status", CLOSE_WITH_VACANCY)
+    .select(SELECT);
+  if (error) {
+    console.error("Closing applications failed:", error.message);
+    return { closed: 0, emailed: 0 };
+  }
+  let emailed = 0;
+  for (const a of (data ?? []) as Application[]) {
+    emailed += await sendStatusEmail(a);
+  }
+  return { closed: data?.length ?? 0, emailed };
 }

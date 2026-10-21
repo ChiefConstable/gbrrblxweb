@@ -7,7 +7,13 @@ import { getSupabaseAdmin } from "@/lib/supabaseAdmin";
 import { normalise, type JobRow } from "@/lib/jobs";
 import { notifySubscribers } from "@/lib/alerts";
 import { JOB_STATUSES } from "@/lib/adminJobs";
-import { NEEDS_SCHEDULE, STATUSES, setApplicationStatus, type ApplicationStatus } from "@/lib/applications";
+import {
+  NEEDS_SCHEDULE,
+  STATUSES,
+  closeApplicationsForJob,
+  setApplicationStatus,
+  type ApplicationStatus,
+} from "@/lib/applications";
 
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? "").trim();
 const lines = (fd: FormData, key: string) =>
@@ -55,14 +61,20 @@ export async function saveJob(formData: FormData) {
   };
 
   let previousStatus: string | null = null;
+  let previousSlug: string | null = null;
   let saved: (JobRow & { status: string }) | null = null;
 
   if (id) {
-    const { data: prev } = await db.from("jobs").select("status").eq("id", id).maybeSingle();
+    const { data: prev } = await db.from("jobs").select("status, slug").eq("id", id).maybeSingle();
     previousStatus = prev?.status ?? null;
+    previousSlug = prev?.slug ?? null;
     const { data, error } = await db.from("jobs").update(fields).eq("id", id).select("*").single();
     if (error) redirect(`/admin/jobs/${id}?error=${encodeURIComponent(error.message)}`);
     saved = data;
+    // Keep existing applications attached if the job's web address changed
+    if (saved && previousSlug && previousSlug !== saved.slug) {
+      await db.from("applications").update({ job_slug: saved.slug }).eq("job_slug", previousSlug);
+    }
   } else {
     const { data, error } = await db
       .from("jobs")
@@ -77,9 +89,15 @@ export async function saveJob(formData: FormData) {
   if (saved && saved.status === "published" && previousStatus !== "published") {
     notified = await notifySubscribers(normalise(saved));
   }
+  // Taking a job off the site closes its applications that haven't reached an offer
+  let closedApps = 0;
+  if (saved && id && saved.status !== "published") {
+    closedApps = (await closeApplicationsForJob(saved.slug)).closed;
+  }
 
   refreshJobPages(saved?.slug);
-  redirect(`/admin?saved=${encodeURIComponent(title)}&notified=${notified}`);
+  revalidatePath("/admin/applications");
+  redirect(`/admin?saved=${encodeURIComponent(title)}&notified=${notified}&closedApps=${closedApps}`);
 }
 
 export async function setJobStatus(formData: FormData) {
@@ -98,8 +116,11 @@ export async function setJobStatus(formData: FormData) {
 
   let notified = 0;
   if (data && status === "published" && prev?.status !== "published") notified = await notifySubscribers(normalise(data));
+  let closedApps = 0;
+  if (data && status !== "published") closedApps = (await closeApplicationsForJob(data.slug)).closed;
   refreshJobPages(data?.slug);
-  redirect(`/admin?updated=${encodeURIComponent(data?.title ?? "Job")}&notified=${notified}`);
+  revalidatePath("/admin/applications");
+  redirect(`/admin?updated=${encodeURIComponent(data?.title ?? "Job")}&notified=${notified}&closedApps=${closedApps}`);
 }
 
 export async function deleteJob(formData: FormData) {
@@ -108,8 +129,10 @@ export async function deleteJob(formData: FormData) {
   if (!db) redirect("/admin?error=supabase");
   const id = str(formData, "id");
   const { data } = await db.from("jobs").delete().eq("id", id).select("slug, title").maybeSingle();
+  const closedApps = data?.slug ? (await closeApplicationsForJob(data.slug)).closed : 0;
   refreshJobPages(data?.slug);
-  redirect(`/admin?deleted=${encodeURIComponent(data?.title ?? "Job")}`);
+  revalidatePath("/admin/applications");
+  redirect(`/admin?deleted=${encodeURIComponent(data?.title ?? "Job")}&closedApps=${closedApps}`);
 }
 
 /** Converts a datetime-local value ("2026-10-25T19:00") in UK time to an ISO timestamp. */

@@ -41,7 +41,7 @@ export default async function ApplicationPage({ params, searchParams }: Props) {
   if (!a || (!viewer.isAdmin && (a.provider !== viewer.provider || a.provider_account_id !== viewer.providerAccountId))) notFound();
 
   const stepIndex = a.status === "accepted" ? STEPS.length : STEPS.findIndex((s) => s.key === a.status);
-  const closed = ["declined", "unsuccessful", "withdrawn"].includes(a.status);
+  const closed = ["declined", "unsuccessful", "withdrawn", "vacancy_closed"].includes(a.status);
   const canWithdraw = ["submitted", "assessment", "group_interview", "interview"].includes(a.status);
 
   return (
@@ -207,6 +207,8 @@ const MESSAGES: Partial<Record<ApplicationStatus, string>> = {
   declined: "You declined this offer. You're welcome to apply for other roles at any time.",
   unsuccessful: "Unfortunately you weren't successful this time. You can apply for other roles straight away.",
   withdrawn: "You withdrew this application.",
+  vacancy_closed:
+    "This vacancy has closed, so your application won't go any further. You're welcome to apply for our other vacancies.",
 };
 
 function StatusMessage({ status }: { status: ApplicationStatus }) {

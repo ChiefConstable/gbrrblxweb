@@ -89,3 +89,8 @@ create index if not exists applications_applicant_idx on public.applications(pro
 create index if not exists applications_status_idx on public.applications(status, created_at desc);
 alter table public.applications enable row level security;
 revoke all on public.applications from anon, authenticated;
+
+-- v5: "vacancy_closed" status, set when a job is closed or deleted before an offer was made.
+alter table public.applications drop constraint if exists applications_status_check;
+alter table public.applications add constraint applications_status_check check (status in
+  ('submitted','assessment','group_interview','interview','offered','accepted','declined','unsuccessful','withdrawn','vacancy_closed'));
