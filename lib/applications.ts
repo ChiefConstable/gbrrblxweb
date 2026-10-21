@@ -24,6 +24,14 @@ const WITHDRAWABLE: ApplicationStatus[] = ["submitted", "assessment", "group_int
 // Closed automatically when their vacancy is closed or deleted (offers are kept)
 export const CLOSE_WITH_VACANCY: ApplicationStatus[] = ["submitted", "assessment", "group_interview", "interview"];
 export const NEEDS_SCHEDULE: ApplicationStatus[] = ["group_interview", "interview"];
+// Applications closed with their vacancy are deleted this many days later by a
+// scheduled job in Supabase (see supabase/schema.sql, v6).
+export const CLOSED_RETENTION_DAYS = 5;
+
+/** When a vacancy-closed application will be deleted. */
+export function deletionDate(a: { updated_at: string }) {
+  return new Date(new Date(a.updated_at).getTime() + CLOSED_RETENTION_DAYS * 24 * 60 * 60 * 1000);
+}
 export type ApplicationStatus = (typeof STATUSES)[number];
 
 export const STATUS_LABEL: Record<ApplicationStatus, string> = {
@@ -314,6 +322,7 @@ function buildEmail(a: Application): { subject: string; title: string; paragraph
           `Thank you for your interest in ${role} (${escapeHtml(a.job_location)}).`,
           "Applications for this vacancy have now closed, so your application won't be taken any further in the recruitment process. Any assessment or interview that was booked for this role has been cancelled.",
           "This isn't a reflection on your application. You're welcome to apply for any of our other vacancies straight away, and you can sign up for job alerts to hear when similar roles open.",
+          `Your application for this role will be deleted automatically in ${CLOSED_RETENTION_DAYS} days.`,
         ],
         cta: [`${siteUrl()}/jobs`, "See current vacancies"],
       };

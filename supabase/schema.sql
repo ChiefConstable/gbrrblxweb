@@ -94,3 +94,18 @@ revoke all on public.applications from anon, authenticated;
 alter table public.applications drop constraint if exists applications_status_check;
 alter table public.applications add constraint applications_status_check check (status in
   ('submitted','assessment','group_interview','interview','offered','accepted','declined','unsuccessful','withdrawn','vacancy_closed'));
+
+-- v6: delete vacancy-closed applications 5 days after they were closed (runs hourly via pg_cron).
+create extension if not exists pg_cron;
+create or replace function public.delete_old_vacancy_closed_applications()
+returns integer language sql security definer set search_path = public as $$
+  with gone as (
+    delete from public.applications
+    where status = 'vacancy_closed' and updated_at < now() - interval '5 days'
+    returning 1
+  )
+  select count(*)::integer from gone;
+$$;
+revoke all on function public.delete_old_vacancy_closed_applications() from public, anon, authenticated;
+select cron.unschedule(jobid) from cron.job where jobname = 'delete-vacancy-closed-applications';
+select cron.schedule('delete-vacancy-closed-applications', '17 * * * *', $$select public.delete_old_vacancy_closed_applications();$$);

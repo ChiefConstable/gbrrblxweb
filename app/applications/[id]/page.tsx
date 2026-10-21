@@ -10,6 +10,7 @@ import {
   NEEDS_SCHEDULE,
   STATUS_LABEL,
   STATUS_STYLE,
+  deletionDate,
   formatInterviewTime,
   formatReference,
   getApplication,
@@ -116,6 +117,12 @@ export default async function ApplicationPage({ params, searchParams }: Props) {
           )}
 
           <StatusMessage status={a.status} />
+          {a.status === "vacancy_closed" && (
+            <p className="mt-2 text-xs text-gray-500">
+              This application will be deleted on{" "}
+              {deletionDate(a).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" })}.
+            </p>
+          )}
         </div>
 
         {/* Offer: the accept page */}

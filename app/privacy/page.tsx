@@ -104,7 +104,8 @@ export default function PrivacyPage() {
 
         <h2>How long we keep it</h2>
         <ul>
-          <li>Applications: we aim to delete these within 12 months of a decision</li>
+          <li>Applications closed because the vacancy closed: deleted automatically after 5 days</li>
+          <li>Other applications: we aim to delete these within 12 months of a decision</li>
           <li>Job alert sign-ups: until you unsubscribe (unconfirmed sign-ups are cleared out regularly)</li>
           <li>Sign-in sessions: up to 30 days on your device</li>
         </ul>

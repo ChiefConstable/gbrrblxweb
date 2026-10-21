@@ -4,6 +4,7 @@ import { updateApplication } from "@/app/admin/actions";
 import StatusFields from "@/components/admin/StatusFields";
 import {
   NEEDS_SCHEDULE,
+  deletionDate,
   STATUS_LABEL,
   STATUS_STYLE,
   formatInterviewTime,
@@ -66,6 +67,12 @@ export default async function AdminApplicationPage({ params, searchParams }: Pro
       <p className="mt-1 text-sm text-gray-600">
         {a.job_title}, {a.job_location} · applied {new Date(a.created_at).toLocaleString("en-GB")}
       </p>
+      {a.status === "vacancy_closed" && (
+        <p className="mt-2 text-xs font-semibold text-gray-500">
+          Closed with its vacancy. Deleted automatically on{" "}
+          {deletionDate(a).toLocaleString("en-GB", { timeZone: "Europe/London" })}.
+        </p>
+      )}
 
       {updated && (
         <p role="status" className="mt-6 rounded-sm bg-brand-green/10 p-3 text-sm text-brand-dark">
