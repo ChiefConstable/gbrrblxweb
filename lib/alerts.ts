@@ -86,6 +86,10 @@ export async function subscribe(input: { firstName: string; lastName: string; em
     {
       to: email,
       subject: "Confirm your GBR Careers job alerts",
+      headers: {
+        "List-Unsubscribe": `<${unsubscribeUrl(row.token)}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
       text: `Hi ${input.firstName},\n\nPlease confirm your GBR Careers job alerts by opening this link:\n${confirmUrl(row.token)}\n\nIf you didn't sign up, ignore this email and you won't hear from us.`,
       html: layout(
         "Confirm your job alerts",
