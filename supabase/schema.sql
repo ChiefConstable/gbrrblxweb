@@ -109,3 +109,13 @@ $$;
 revoke all on function public.delete_old_vacancy_closed_applications() from public, anon, authenticated;
 select cron.unschedule(jobid) from cron.job where jobname = 'delete-vacancy-closed-applications';
 select cron.schedule('delete-vacancy-closed-applications', '17 * * * *', $$select public.delete_old_vacancy_closed_applications();$$);
+
+-- v7: rate-limits automatic email replies (one per sender per inbox per day).
+create table if not exists public.email_autoreplies (
+  sender text not null,
+  inbox text not null,
+  last_sent timestamptz not null default now(),
+  primary key (sender, inbox)
+);
+alter table public.email_autoreplies enable row level security;
+revoke all on public.email_autoreplies from anon, authenticated;
